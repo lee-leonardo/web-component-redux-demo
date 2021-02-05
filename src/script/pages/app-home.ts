@@ -3,6 +3,8 @@ import { LitElement, css, html, customElement, property } from 'lit-element';
 // For more info on the @pwabuilder/pwainstall component click here https://github.com/pwa-builder/pwa-install
 import '@pwabuilder/pwainstall';
 
+type TagList = Array<string>;
+
 @customElement('app-home')
 export class AppHome extends LitElement {
   // For more information on using properties in lit-element
@@ -11,14 +13,14 @@ export class AppHome extends LitElement {
 
   static get styles() {
     return css`
-      #welcomeBar {
+      #todo-list {
         display: flex;
         justify-content: center;
         align-items: center;
         flex-direction: column;
       }
 
-      #welcomeBar fast-card {
+      #todo-list fast-card {
         margin-bottom: 12px;
       }
 
@@ -46,7 +48,7 @@ export class AppHome extends LitElement {
       }
 
       @media (screen-spanning: single-fold-vertical) {
-        #welcomeBar {
+        #todo-list {
           flex-direction: row;
           align-items: flex-start;
           justify-content: space-between;
@@ -57,7 +59,7 @@ export class AppHome extends LitElement {
         }
       }
 
-      @media(prefers-color-scheme: light) {
+      @media (prefers-color-scheme: light) {
         fast-card {
           --background-color: white;
         }
@@ -88,7 +90,14 @@ export class AppHome extends LitElement {
   render() {
     return html`
       <div>
-        <div id="welcomeBar">
+        <fast-card>
+          <!-- TODO inputs -->
+
+          <!-- TODO rm tests -->
+          ${this.renderTodoItem('number 1', ['a', 'b'])}
+        </fast-card>
+
+        <div id="todo-list">
           <fast-card id="welcomeCard">
             <h2>${this.message}</h2>
 
@@ -163,5 +172,22 @@ export class AppHome extends LitElement {
         <pwa-install>Install PWA Starter</pwa-install>
       </div>
     `;
+  }
+
+  renderTodoItem(text: string, tags?: TagList) {
+    return html`
+      <fast-card>
+        <fast-checkbox>${text}</fast-checkbox>
+        <fast-button appearance="stealth">
+          <ion-icon name="close-circle-outline"></ion-icon>
+        </fast-button>
+
+        ${tags && tags.length > 0 ? this.renderTagList(tags) : undefined}
+      </fast-card>
+    `;
+  }
+
+  renderTagList(tags: TagList) {
+    return tags.map((tag) => html`<fast-badge> ${tag} </fast-badge>`);
   }
 }
