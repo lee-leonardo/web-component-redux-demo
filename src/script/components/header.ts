@@ -34,7 +34,7 @@ export class AppHeader extends LitElement {
         margin-left: 10px;
       }
 
-      @media(prefers-color-scheme: light) {
+      @media (prefers-color-scheme: light) {
         header {
           color: black;
         }
@@ -53,7 +53,6 @@ export class AppHeader extends LitElement {
 
         <nav>
           <fast-anchor href="./" appearance="button">Home</fast-anchor>
-          <fast-anchor href="./about" appearance="button">About</fast-anchor>
         </nav>
       </header>
     `;
