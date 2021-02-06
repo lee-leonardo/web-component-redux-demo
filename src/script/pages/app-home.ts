@@ -8,7 +8,7 @@ import {
   internalProperty,
 } from 'lit-element';
 
-import { TodoItem } from '../redux';
+import { TodoItem, TagList } from '../redux';
 
 // For more info on the @pwabuilder/pwainstall component click here https://github.com/pwa-builder/pwa-install
 import '@pwabuilder/pwainstall';

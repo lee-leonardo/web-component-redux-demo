@@ -1,7 +1,6 @@
 import { configureStore, createSlice, PayloadAction } from '@reduxjs/toolkit';
 
 export type TagList = Array<string>;
-
 export interface TodoItem {
   text: string;
   checked: boolean;
