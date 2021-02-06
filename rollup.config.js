@@ -11,7 +11,7 @@ const workbox = require('rollup-plugin-workbox-inject');
 export default {
   input: "build/index.html",
   output: {
-    dir: "dist",
+    dir: "docs",
     format: "es",
   },
   plugins: [
