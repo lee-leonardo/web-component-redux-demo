@@ -8,16 +8,10 @@ import {
   internalProperty,
 } from 'lit-element';
 
+import { TodoItem } from '../redux';
+
 // For more info on the @pwabuilder/pwainstall component click here https://github.com/pwa-builder/pwa-install
 import '@pwabuilder/pwainstall';
-
-type TagList = Array<string>;
-
-interface TodoItem {
-  text: string;
-  checked: boolean;
-  tags?: TagList;
-}
 
 @customElement('app-home')
 export class AppHome extends LitElement {
@@ -25,6 +19,7 @@ export class AppHome extends LitElement {
     {
       text: 'example 1',
       checked: false,
+      index: 0,
     },
   ];
 
@@ -204,6 +199,7 @@ export class AppHome extends LitElement {
     this.todos.push({
       text: this.addInput?.value,
       checked: false,
+      index: this.todos.length,
     });
     this.requestUpdate();
   }
