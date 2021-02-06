@@ -2,8 +2,6 @@ import { LitElement, css, html, customElement } from 'lit-element';
 
 import './app-home';
 
-import { Router } from '@vaadin/router';
-
 import '../components/header';
 
 @customElement('app-index')
@@ -52,29 +50,13 @@ export class AppIndex extends LitElement {
     super();
   }
 
-  firstUpdated() {
-    // this method is a lifecycle even in lit-element
-    // for more info check out the lit-element docs https://lit-element.polymer-project.org/guide/lifecycle
-
-    // For more info on using the @vaadin/router check here https://vaadin.com/router
-    const router = new Router(this.shadowRoot?.querySelector('#routerOutlet'));
-    router.setRoutes([
-      // temporarily cast to any because of a Type bug with the router
-      {
-        path: 'web-component-redux-demo',
-        animate: true,
-        children: [{ path: '/', component: 'app-home' }],
-      } as any,
-    ]);
-  }
-
   render() {
     return html`
       <div>
         <app-header></app-header>
 
         <main>
-          <div id="routerOutlet"></div>
+          <app-home></app-home>
         </main>
       </div>
     `;
