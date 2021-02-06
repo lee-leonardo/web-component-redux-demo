@@ -1,20 +1,46 @@
-import { LitElement, css, html, customElement, property } from 'lit-element';
+import {
+  LitElement,
+  css,
+  html,
+  customElement,
+  property,
+  query,
+  internalProperty,
+} from 'lit-element';
 
 // For more info on the @pwabuilder/pwainstall component click here https://github.com/pwa-builder/pwa-install
 import '@pwabuilder/pwainstall';
 
 type TagList = Array<string>;
 
+interface TodoItem {
+  text: string;
+  checked: boolean;
+  tags?: TagList;
+}
+
 @customElement('app-home')
 export class AppHome extends LitElement {
-  // For more information on using properties in lit-element
-  // check out this link https://lit-element.polymer-project.org/guide/properties#declare-with-decorators
-  @property() message = 'Welcome!';
+  @property({ type: Array }) todos: Array<TodoItem> = [
+    {
+      text: 'example 1',
+      checked: false,
+    },
+  ];
+
+  @query('#addInput') addInput: HTMLInputElement | undefined;
+
+  @internalProperty() inputEnabled: boolean;
 
   static get styles() {
     return css`
+      ion-icon {
+        vertical-align: middle;
+      }
+
       #todo-list {
         display: flex;
+        width: 100%;
         justify-content: center;
         align-items: center;
         flex-direction: column;
@@ -30,14 +56,47 @@ export class AppHome extends LitElement {
         padding-top: 0px;
       }
 
+      #add {
+        display: flex;
+        margin: 16px;
+        width: 40%;
+        justify-content: space-between;
+      }
+
+      .add-input {
+        flex-grow: 1;
+      }
+
+      .add-button {
+        margin-left: 8px;
+      }
+
       pwa-install {
         position: absolute;
         bottom: 16px;
         right: 16px;
       }
 
+      .layout {
+        display: flex;
+        flex-direction: column;
+        max-width: 1200px;
+        align-items: center;
+        justify-content: center;
+      }
+
       button {
         cursor: pointer;
+      }
+
+      fast-card {
+        width: 40%;
+        display: flex;
+        flex-direction: row;
+        justify-content: space-between;
+        vertical-align: middle;
+
+        padding: 8px;
       }
 
       @media (min-width: 1200px) {
@@ -89,105 +148,68 @@ export class AppHome extends LitElement {
 
   render() {
     return html`
-      <div>
-        <fast-card>
-          <!-- TODO inputs -->
-
-          <!-- TODO rm tests -->
-          ${this.renderTodoItem('number 1', ['a', 'b'])}
-        </fast-card>
-
-        <div id="todo-list">
-          <fast-card id="welcomeCard">
-            <h2>${this.message}</h2>
-
-            <p>
-              For more information on the PWABuilder pwa-starter, check out the
-              <fast-anchor
-                href="https://github.com/pwa-builder/pwa-starter/blob/master/README.md"
-                appearance="hypertext"
-                >README</fast-anchor
-              >.
-            </p>
-
-            <p>
-              Welcome to the
-              <fast-anchor href="https://pwabuilder.com" appearance="hypertext"
-                >PWABuilder</fast-anchor
-              >
-              pwa-starter! Be sure to head back to
-              <fast-anchor href="https://pwabuilder.com" appearance="hypertext"
-                >PWABuilder</fast-anchor
-              >
-              when you are ready to ship this PWA to the Microsoft, Google Play
-              and Samsung Galaxy stores!
-            </p>
-
-            ${'share' in navigator
-              ? html`<fast-button appearance="primary" @click="${this.share}"
-                  >Share this Starter!</fast-button
-                >`
-              : null}
-          </fast-card>
-
-          <fast-card id="infoCard">
-            <h2>Technology Used</h2>
-
-            <ul>
-              <li>
-                <fast-anchor
-                  href="https://www.typescriptlang.org/"
-                  appearance="hypertext"
-                  >TypeScript</fast-anchor
-                >
-              </li>
-
-              <li>
-                <fast-anchor
-                  href="https://lit-element.polymer-project.org/"
-                  appearance="hypertext"
-                  >lit-element</fast-anchor
-                >
-              </li>
-
-              <li>
-                <fast-anchor
-                  href="https://www.fast.design/docs/components/getting-started"
-                  appearance="hypertext"
-                  >FAST Components</fast-anchor
-                >
-              </li>
-
-              <li>
-                <fast-anchor
-                  href="https://vaadin.github.io/vaadin-router/vaadin-router/demo/#vaadin-router-getting-started-demos"
-                  appearance="hypertext"
-                  >Vaadin Router</fast-anchor
-                >
-              </li>
-            </ul>
-          </fast-card>
+      <div class="layout">
+        <h1>todos</h2>
+        <div id="add">
+          <fast-text-field id="addInput" class="add-input" placeholder="What needs to be done?" @keyup=${
+            this.handleAddInput
+          }></fast-text-field>
+          <fast-button
+            class="add-button"
+            @click=${this.addTodoItem}
+            .disabled=${!this.inputEnabled}>
+            <ion-icon name="add-circle-outline"></ion-icon>
+          </fast-button>
         </div>
+
+        <div id="todo-list">${this.todos.map((item, i) =>
+          this.renderTodoItem(item, i)
+        )}</div>
 
         <pwa-install>Install PWA Starter</pwa-install>
       </div>
     `;
   }
 
-  renderTodoItem(text: string, tags?: TagList) {
+  renderTodoItem(item: TodoItem, index: number) {
     return html`
       <fast-card>
-        <fast-checkbox>${text}</fast-checkbox>
-        <fast-button appearance="stealth">
+        <fast-checkbox .checked=${item.checked}>${item.text}</fast-checkbox>
+        <fast-button
+          appearance="stealth"
+          @click=${() => this.deleteTodoItemAt(index)}
+        >
           <ion-icon name="close-circle-outline"></ion-icon>
         </fast-button>
 
-        ${tags && tags.length > 0 ? this.renderTagList(tags) : undefined}
+        <!-- ${item.tags && item.tags.length > 0
+          ? this.renderTagList(item.tags)
+          : undefined} -->
       </fast-card>
     `;
   }
 
   renderTagList(tags: TagList) {
     return tags.map((tag) => html`<fast-badge> ${tag} </fast-badge>`);
+  }
+
+  handleAddInput(event: KeyboardEvent) {
+    if (event.key === 'Enter' && this.addInput?.value) {
+      this.addTodoItem();
+    }
+    this.inputEnabled = this.addInput?.value.length > 0;
+  }
+
+  addTodoItem() {
+    this.todos.push({
+      text: this.addInput?.value,
+      checked: false,
+    });
+    this.requestUpdate();
+  }
+
+  deleteTodoItemAt(index: number) {
+    this.todos = this.todos.filter((el, i) => i !== index);
+    this.requestUpdate();
   }
 }
