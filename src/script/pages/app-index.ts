@@ -61,7 +61,7 @@ export class AppIndex extends LitElement {
     router.setRoutes([
       // temporarily cast to any because of a Type bug with the router
       {
-        path: '',
+        path: 'web-component-redux-demo',
         animate: true,
         children: [{ path: '/', component: 'app-home' }],
       } as any,
