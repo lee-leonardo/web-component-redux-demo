@@ -9,17 +9,17 @@ import {
   internalProperty,
 } from 'lit-element';
 
-import { TodoItem, TagList } from '../redux';
+import {
+  initialState,
+  TodoItem,
+  TagList,
+  store,
+  actions as todoActions,
+} from '../redux';
 
 @customElement('app-home')
 export class AppHome extends LitElement {
-  @property({ type: Array }) todos: Array<TodoItem> = [
-    {
-      text: 'example 1',
-      checked: false,
-      index: 0,
-    },
-  ];
+  @property({ type: Array }) todos: Array<TodoItem> = store.getState().todos;
 
   @query('#addInput') addInput: HTMLInputElement | undefined;
 
@@ -121,6 +121,11 @@ export class AppHome extends LitElement {
 
   constructor() {
     super();
+
+    store.subscribe(() => {
+      this.todos = store.getState().todos;
+      this.requestUpdate();
+    });
   }
 
   share() {
@@ -161,7 +166,12 @@ export class AppHome extends LitElement {
   renderTodoItem(item: TodoItem, index: number) {
     return html`
       <fast-card>
-        <fast-checkbox .checked=${item.checked}>${item.text}</fast-checkbox>
+        <fast-checkbox
+          .checked=${item.checked}
+          data-index=${index}
+          @change=${this.handleCheckBoxClick}
+          >${item.text}</fast-checkbox
+        >
         <fast-button
           appearance="stealth"
           @click=${() => this.deleteTodoItemAt(index)}
@@ -187,17 +197,23 @@ export class AppHome extends LitElement {
     this.inputEnabled = this.addInput?.value.length > 0;
   }
 
+  // This is kinda redundant, as Lit-Element 2-way binds the reference. This is dangerous from a source of truth standpoint, but this behavior is worth noting.
+  handleCheckBoxClick(event: TouchEvent) {
+    const index = Number((<HTMLElement>event.target).dataset.index);
+    store.dispatch(todoActions.toggle({ index }));
+  }
+
   addTodoItem() {
-    this.todos.push({
+    const item = {
       text: this.addInput?.value,
       checked: false,
       index: this.todos.length,
-    });
-    this.requestUpdate();
+    };
+    this.addInput.value = '';
+    store.dispatch(todoActions.add(item));
   }
 
   deleteTodoItemAt(index: number) {
-    this.todos = this.todos.filter((el, i) => i !== index);
-    this.requestUpdate();
+    store.dispatch(todoActions.delete({ index }));
   }
 }

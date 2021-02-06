@@ -4,8 +4,11 @@ export type TagList = Array<string>;
 export interface TodoItem {
   text: string;
   checked: boolean;
-  index: number;
   tags?: TagList;
+}
+
+export interface Position {
+  index: number;
 }
 
 export enum TodoActionTypes {
@@ -15,21 +18,33 @@ export enum TodoActionTypes {
 }
 
 const name = 'todos';
-const initialState: Array<TodoItem> = [];
+
+interface State {
+  todos: Array<TodoItem>;
+}
+
+const initialState: State = {
+  todos: [
+    {
+      text: 'example 1',
+      checked: false,
+    },
+  ],
+};
 
 const todosSlice = createSlice({
   name,
   initialState,
   reducers: {
     add: (state, action: PayloadAction<TodoItem>) => {
-      state.push(action.payload);
+      state.todos.push(action.payload);
     },
-    delete: (state, action: PayloadAction<TodoItem>) => {
-      state = state.filter((item, i) => i !== action.payload.index);
+    delete: (state, action: PayloadAction<Position>) => {
+      state.todos = state.todos.filter((item, i) => i !== action.payload.index);
     },
-    toggle: (state, action: PayloadAction<TodoItem>) => {
+    toggle: (state, action: PayloadAction<Position>) => {
       const { index } = action.payload;
-      state[index].checked = !state[index].checked;
+      state.todos[index].checked = !state.todos[index].checked;
     },
   },
 });
