@@ -1,3 +1,4 @@
+import '@pwabuilder/pwainstall';
 import {
   LitElement,
   css,
@@ -9,9 +10,6 @@ import {
 } from 'lit-element';
 
 import { TodoItem, TagList } from '../redux';
-
-// For more info on the @pwabuilder/pwainstall component click here https://github.com/pwa-builder/pwa-install
-import '@pwabuilder/pwainstall';
 
 @customElement('app-home')
 export class AppHome extends LitElement {
@@ -123,12 +121,6 @@ export class AppHome extends LitElement {
 
   constructor() {
     super();
-  }
-
-  async firstUpdated() {
-    // this method is a lifecycle even in lit-element
-    // for more info check out the lit-element docs https://lit-element.polymer-project.org/guide/lifecycle
-    console.log('This is your home page');
   }
 
   share() {
